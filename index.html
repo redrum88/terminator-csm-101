@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSM-101 // T-800 Technical Reference Manual</title>
+<style>
+  :root{
+    --void:#0a0d10;
+    --steel:#12171c;
+    --steel-2:#1a212a;
+    --steel-3:#222c36;
+    --hairline:#2b3640;
+    --ink:#c9d3da;
+    --ink-dim:#7d8a94;
+    --ink-faint:#566069;
+    --crimson:#e2202c;
+    --crimson-dim:#8f1820;
+    --cyan:#37cfd6;
+    --amber:#f0a830;
+    --ok:#5ec27a;
+    --mono:"JetBrains Mono","SF Mono","Cascadia Mono","Consolas","Courier New",ui-monospace,monospace;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --cond:"Arial Narrow","Roboto Condensed","Helvetica Neue Condensed",Impact,var(--sans);
+    --gut:clamp(16px,4vw,48px);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #141b22 0%, var(--void) 60%) fixed,
+      var(--void);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    letter-spacing:.1px;
+  }
+
+  /* ambient scanlines + vignette — pure decoration, killed for reduced motion */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply;opacity:.5;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:49;
+    box-shadow:inset 0 0 240px 40px rgba(0,0,0,.7);
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    body::before{display:none}
+  }
+
+  /* ---- classification spine ---- */
+  .classbar{
+    position:sticky;top:0;z-index:40;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:7px var(--gut);
+    background:var(--crimson);
+    color:#fff;
+    font-family:var(--mono);
+    font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+    border-bottom:1px solid #000;
+    box-shadow:0 2px 0 rgba(0,0,0,.6),0 10px 24px rgba(0,0,0,.5);
+  }
+  .classbar span{white-space:nowrap}
+  .classbar .mid{letter-spacing:.18em;opacity:.92;font-weight:600}
+  @media(max-width:620px){.classbar .mid{display:none}}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 var(--gut) 120px}
+
+  /* ---- masthead ---- */
+  .masthead{padding:64px 0 28px;border-bottom:1px solid var(--hairline);position:relative}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--cyan);display:flex;align-items:center;gap:12px;margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--crimson)}
+  .title{
+    font-family:var(--cond);font-weight:700;
+    font-size:clamp(40px,9vw,108px);line-height:.92;letter-spacing:.01em;
+    text-transform:uppercase;margin:0;color:#eef3f6;
+    text-shadow:0 0 1px rgba(255,255,255,.2);
+  }
+  .title .t8{color:var(--crimson);text-shadow:0 0 26px rgba(226,32,44,.45)}
+  .subtitle{
+    margin:18px 0 0;max-width:60ch;color:var(--ink-dim);font-size:16.5px;
+  }
+  .desig{
+    margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--hairline);border:1px solid var(--hairline);
+  }
+  .desig div{background:var(--steel);padding:12px 14px}
+  .desig dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+  .desig dd{margin:5px 0 0;font-family:var(--mono);font-size:14px;color:var(--ink);font-weight:600}
+  .desig dd.hot{color:var(--amber)}
+
+  /* ---- table of contents ---- */
+  .toc{margin:46px 0 0}
+  .toc h2{
+    font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:600;margin:0 0 16px;
+  }
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--hairline);border:1px solid var(--hairline)}
+  .toc-grid a{
+    background:var(--steel);padding:14px 16px;text-decoration:none;color:var(--ink);
+    display:flex;gap:12px;align-items:baseline;transition:background .15s,color .15s;
+  }
+  .toc-grid a:hover,.toc-grid a:focus-visible{background:var(--steel-3);color:#fff;outline:none}
+  .toc-grid .num{font-family:var(--mono);font-size:12px;color:var(--crimson);font-weight:700;min-width:2.4em}
+  .toc-grid .lbl{font-family:var(--cond);text-transform:uppercase;letter-spacing:.06em;font-size:18px}
+
+  /* ---- sections ---- */
+  section{padding:64px 0 8px;border-top:1px solid var(--hairline);scroll-margin-top:64px}
+  .sec-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:8px}
+  .sec-num{
+    font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.18em;color:var(--crimson);
+    border:1px solid var(--crimson-dim);padding:6px 9px;border-radius:2px;white-space:nowrap;margin-top:8px;
+    background:rgba(226,32,44,.06);
+  }
+  .sec-title{
+    font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+    font-size:clamp(28px,5vw,46px);line-height:1;margin:0;color:#eef3f6;
+  }
+  .sec-sub{color:var(--ink-dim);margin:14px 0 26px;max-width:74ch}
+  h3{
+    font-family:var(--cond);text-transform:uppercase;letter-spacing:.05em;font-weight:700;
+    font-size:21px;color:var(--cyan);margin:38px 0 12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  h3::before{content:"▸";color:var(--crimson);font-size:13px}
+  p{margin:0 0 16px}
+  strong{color:#e7eef2}
+  .lead{color:var(--ink)}
+  .note{color:var(--ink-dim);font-size:14.5px}
+
+  /* ---- panels ---- */
+  .panel{
+    position:relative;background:var(--steel);border:1px solid var(--hairline);
+    padding:22px 24px;margin:24px 0;
+  }
+  .panel::before,.panel::after{content:"";position:absolute;width:10px;height:10px;border:2px solid var(--crimson)}
+  .panel::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+  .panel::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+  .panel .ptag{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--amber);margin-bottom:10px;display:block;
+  }
+  .panel.warn{border-color:var(--crimson-dim)}
+  .panel.warn::before,.panel.warn::after{border-color:var(--amber)}
+  .panel.warn .ptag{color:var(--crimson)}
+
+  /* ---- tables ---- */
+  .tbl-scroll{overflow-x:auto;margin:22px 0;border:1px solid var(--hairline)}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+  caption{
+    text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--ink-faint);padding:12px 14px;background:var(--void);border-bottom:1px solid var(--hairline);
+  }
+  caption b{color:var(--cyan)}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--hairline);vertical-align:top}
+  thead th{
+    background:var(--steel-2);font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--cyan);font-weight:600;position:sticky;top:0;
+  }
+  tbody tr:nth-child(even){background:rgba(255,255,255,.014)}
+  tbody tr:hover{background:rgba(55,207,214,.05)}
+  td .k{font-family:var(--mono);color:var(--amber);font-weight:600}
+  td code,.mono{font-family:var(--mono);color:var(--ink);font-size:13px}
+  .val{font-family:var(--mono);color:var(--amber);white-space:nowrap}
+  .tag{
+    display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:2px 7px;border:1px solid var(--hairline);border-radius:2px;color:var(--ink-dim);
+  }
+  .tag.hot{color:var(--crimson);border-color:var(--crimson-dim)}
+  .tag.ok{color:var(--ok);border-color:#2f5e3c}
+  .tag.cy{color:var(--cyan);border-color:#1f5256}
+
+  /* ---- figures ---- */
+  figure{margin:30px 0;background:var(--steel);border:1px solid var(--hairline);padding:18px}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{
+    margin-top:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--ink-dim);
+    border-top:1px solid var(--hairline);padding-top:10px;
+  }
+  figcaption b{color:var(--crimson)}
+
+  /* svg shared text */
+  .svg-lab{font-family:var(--mono);font-size:11px;fill:var(--ink-dim);letter-spacing:.04em}
+  .svg-lab-hi{font-family:var(--mono);font-size:11px;fill:var(--cyan);letter-spacing:.04em}
+  .svg-val{font-family:var(--mono);font-size:10px;fill:var(--amber)}
+  .svg-title{font-family:var(--mono);font-size:12px;fill:#dfe7ec;letter-spacing:.18em}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+
+  ul.spec{list-style:none;padding:0;margin:16px 0}
+  ul.spec li{padding:8px 0;border-bottom:1px solid var(--hairline);display:flex;gap:14px;justify-content:space-between}
+  ul.spec li span:first-child{color:var(--ink-dim)}
+  ul.spec li span:last-child{font-family:var(--mono);color:var(--amber);text-align:right}
+
+  /* HUD mock */
+  .hud{
+    background:#05080a;border:1px solid var(--crimson-dim);padding:0;overflow:hidden;
+  }
+
+  footer{
+    margin-top:80px;padding:34px 0 0;border-top:1px solid var(--hairline);
+    color:var(--ink-faint);font-family:var(--mono);font-size:12px;line-height:1.8;
+  }
+  footer .stamp{color:var(--crimson);letter-spacing:.2em}
+  footer a{color:var(--cyan);text-decoration:none}
+  .disclaimer{margin-top:18px;font-size:11.5px;color:var(--ink-faint);max-width:78ch;font-family:var(--sans);line-height:1.6}
+
+  a.up{position:fixed;right:18px;bottom:18px;z-index:45;font-family:var(--mono);font-size:11px;
+    background:var(--steel-2);border:1px solid var(--hairline);color:var(--cyan);text-decoration:none;
+    padding:8px 11px;letter-spacing:.1em}
+  a.up:hover{border-color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<div class="classbar">
+  <span>◤ SKYNET // CYBERDYNE SYSTEMS</span>
+  <span class="mid">TS//SAP — CRIMSON — AUTONOMOUS WEAPONS DIVISION</span>
+  <span>EYES ONLY ◢</span>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="eyebrow">Technical Reference Manual · CSM-101 · Rev. J</div>
+    <h1 class="title">Series 800<br><span class="t8">Terminator</span></h1>
+    <p class="subtitle lead">Cyberdyne Systems Model 101 Infiltrator-Combat Unit. Complete subsystem specification: hyperalloy endoskeleton, Neural Net Processor, fission power core, multispectral sensorium, mission-control software, living dermal sheath, and armament handling. Issued by Skynet Automated Fabrication for field service and reconstruction.</p>
+
+    <dl class="desig">
+      <div><dt>Designation</dt><dd>CSM-101 / T-800</dd></div>
+      <div><dt>Class</dt><dd>Infiltrator-Combat</dd></div>
+      <div><dt>Series</dt><dd>800</dd></div>
+      <div><dt>Origin</dt><dd>Skynet Fab Node 04</dd></div>
+      <div><dt>Status</dt><dd class="hot">ACTIVE</dd></div>
+    </dl>
+  </header>
+
+  <!-- ============ TOC ============ -->
+  <nav class="toc" aria-label="Contents">
+    <h2>// Manual Contents</h2>
+    <div class="toc-grid">
+      <a href="#s1"><span class="num">01</span><span class="lbl">Overview</span></a>
+      <a href="#s2"><span class="num">02</span><span class="lbl">Master Specs</span></a>
+      <a href="#s3"><span class="num">03</span><span class="lbl">Architecture</span></a>
+      <a href="#s4"><span class="num">04</span><span class="lbl">Endoskeleton</span></a>
+      <a href="#s5"><span class="num">05</span><span class="lbl">Myomer / Drive</span></a>
+      <a href="#s6"><span class="num">06</span><span class="lbl">Neural Net CPU</span></a>
+      <a href="#s7"><span class="num">07</span><span class="lbl">Power Core</span></a>
+      <a href="#s8"><span class="num">08</span><span class="lbl">Sensorium</span></a>
+      <a href="#s9"><span class="num">09</span><span class="lbl">Software Stack</span></a>
+      <a href="#s10"><span class="num">10</span><span class="lbl">Living Tissue</span></a>
+      <a href="#s11"><span class="num">11</span><span class="lbl">Armament</span></a>
+      <a href="#s12"><span class="num">12</span><span class="lbl">Comms / Net</span></a>
+      <a href="#s13"><span class="num">13</span><span class="lbl">Damage Tolerance</span></a>
+      <a href="#s14"><span class="num">14</span><span class="lbl">Mission Doctrine</span></a>
+      <a href="#s15"><span class="num">15</span><span class="lbl">Maintenance</span></a>
+    </div>
+  </nav>
+
+  <!-- ============ 01 OVERVIEW ============ -->
+  <section id="s1">
+    <div class="sec-head"><span class="sec-num">SYS·01</span><h2 class="sec-title">Mission Overview</h2></div>
+    <p class="sec-sub">Doctrine, role, and the design intent behind the 800-series chassis.</p>
+
+    <p class="lead">The <strong>Model 101</strong> is the production infiltrator of the 800 series: a hyperalloy combat chassis sheathed in cloned living tissue so that it can pass as human at close range, defeat scent-and-sight perimeter security, and operate independently behind resistance lines for the design life of its power cell. Where the earlier 600 series wore rubber skin and failed inspection at the checkpoint, the 101 sweats, bleeds, exhales, and grows hair. It is a weapon that walks through the front door.</p>
+
+    <p>Each unit carries a self-contained <strong>Neural Net Processor</strong> — a learning computer — running a layered mission stack under a hardware behavior lock. Sensing is multispectral and persistent; actuation is superhuman in both force and precision; the power core is rated for autonomous operation measured in decades. The chassis tolerates catastrophic structural loss and continues to pursue its objective on emergency power with a single functioning limb.</p>
+
+    <div class="panel">
+      <span class="ptag">// Design Mandate — Skynet Directive 0x41</span>
+      <p style="margin:0">Infiltrate. Identify. Terminate. Persist. The unit does not feel pity, or remorse, or fear, and it absolutely will not stop — ever — until the mission objective is satisfied or the chassis is rendered non-functional.</p>
+    </div>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 1.1 — <b>Series 800 Variant Register</b></caption>
+        <thead><tr><th>Model</th><th>Sheath</th><th>Primary Role</th><th>Disposition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="k">Model 101</span></td><td>Living tissue (Caucasian male, 1.83 m baseline)</td><td>Deep infiltration · termination</td><td><span class="tag hot">Production</span></td></tr>
+          <tr><td><span class="k">Model 102–199</span></td><td>Living tissue (varied biometric profiles)</td><td>Population-matched infiltration</td><td><span class="tag cy">Field</span></td></tr>
+          <tr><td><span class="k">T-800 (bare)</span></td><td>None — exposed endoskeleton</td><td>Open-ground assault</td><td><span class="tag ok">Reserve</span></td></tr>
+          <tr><td><span class="k">T-850</span></td><td>Living tissue, hardened core</td><td>Anti-Terminator engagement</td><td><span class="tag cy">Limited</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Captured units may be re-tasked. A neural processor switched to read-write and re-flashed with a Resistance protection profile will defend a designated principal with the same absolute commitment it once brought to termination. Treat all field units as potentially reprogrammed until the behavior lock is verified.</p>
+  </section>
+
+  <!-- ============ 02 MASTER SPECS ============ -->
+  <section id="s2">
+    <div class="sec-head"><span class="sec-num">SYS·02</span><h2 class="sec-title">Master Specifications</h2></div>
+    <p class="sec-sub">Top-level chassis envelope. All values are nominal for a fueled, tissue-clad Model 101 at sea-level standard gravity.</p>
+
+    <div class="grid2">
+      <div>
+        <h3>Physical Envelope</h3>
+        <ul class="spec">
+          <li><span>Standing height</span><span>1.83 m</span></li>
+          <li><span>Chassis configurable range</span><span>1.70 – 2.01 m</span></li>
+          <li><span>Endoskeleton dry mass</span><span>146 kg</span></li>
+          <li><span>Gross combat mass (fueled + clad)</span><span>215 kg</span></li>
+          <li><span>Skeletal width (shoulder yoke)</span><span>0.58 m</span></li>
+          <li><span>Center of mass</span><span>L3 vertebral node</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Performance</h3>
+        <ul class="spec">
+          <li><span>Sprint velocity (clad)</span><span>32 km/h</span></li>
+          <li><span>Sprint velocity (bare endo)</span><span>45 km/h</span></li>
+          <li><span>One-arm sustained lift</span><span>250 kg</span></li>
+          <li><span>Peak structural grip force</span><span>4.2 kN</span></li>
+          <li><span>Reaction latency (sense→act)</span><span>18 ms</span></li>
+          <li><span>Autonomous endurance</span><span>120 yr (cell life)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 2.1 — <b>Consolidated System Index</b></caption>
+        <thead><tr><th>Subsystem</th><th>Part code</th><th>Key spec</th><th>§</th></tr></thead>
+        <tbody>
+          <tr><td>Hyperalloy endoskeleton</td><td><code>ENDO-660</code></td><td><span class="val">Hyperalloy 660, 206-node frame</span></td><td>04</td></tr>
+          <tr><td>Myomer actuation</td><td><code>DRV-MMR</code></td><td><span class="val">Electro-hydraulic + myomer bundles</span></td><td>05</td></tr>
+          <tr><td>Neural Net Processor</td><td><code>NNP-3</code></td><td><span class="val">3-D learning lattice, read-only lock</span></td><td>06</td></tr>
+          <tr><td>Power core</td><td><code>PWR-IR1</code></td><td><span class="val">Iridium fission cell + dual H₂ stack</span></td><td>07</td></tr>
+          <tr><td>Sensorium</td><td><code>SNS-MSP</code></td><td><span class="val">Multispectral optics, 0.3–14 µm</span></td><td>08</td></tr>
+          <tr><td>Mission software</td><td><code>SW-OS</code></td><td><span class="val">Layered combat OS, ROM-locked kernel</span></td><td>09</td></tr>
+          <tr><td>Living tissue sheath</td><td><code>DRM-SK</code></td><td><span class="val">Vat-grown dermis, full biosignature</span></td><td>10</td></tr>
+          <tr><td>Armament handling</td><td><code>ARM-HD</code></td><td><span class="val">Universal grip, ballistic co-processor</span></td><td>11</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 03 ARCHITECTURE ============ -->
+  <section id="s3">
+    <div class="sec-head"><span class="sec-num">SYS·03</span><h2 class="sec-title">System Architecture</h2></div>
+    <p class="sec-sub">How the subsystems interconnect. The Neural Net Processor is the single point of authority; all other systems are slaved to it across a triple-redundant photonic bus.</p>
+
+    <figure>
+      <svg viewBox="0 0 880 460" role="img" aria-label="System architecture block diagram">
+        <defs>
+          <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#37cfd6"/>
+          </marker>
+          <marker id="arrR" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#e2202c"/>
+          </marker>
+        </defs>
+        <!-- frame ticks -->
+        <g stroke="#2b3640" stroke-width="1" fill="none">
+          <path d="M10,10 H40 M10,10 V40"/><path d="M870,10 H840 M870,10 V40"/>
+          <path d="M10,450 H40 M10,450 V420"/><path d="M870,450 H840 M870,450 V420"/>
+        </g>
+        <text x="24" y="34" class="svg-title">FIG 3.1 — DATA &amp; POWER BUS TOPOLOGY</text>
+
+        <!-- CPU center -->
+        <rect x="350" y="180" width="180" height="100" rx="3" fill="#1a212a" stroke="#e2202c" stroke-width="2"/>
+        <text x="440" y="212" text-anchor="middle" class="svg-lab" fill="#e7eef2" font-size="13" letter-spacing=".1em">NEURAL NET</text>
+        <text x="440" y="232" text-anchor="middle" class="svg-lab" fill="#e7eef2" font-size="13" letter-spacing=".1em">PROCESSOR</text>
+        <text x="440" y="256" text-anchor="middle" class="svg-val">NNP-3 · BUS MASTER</text>
+
+        <!-- power -->
+        <rect x="60" y="200" width="150" height="60" rx="3" fill="#1a212a" stroke="#f0a830" stroke-width="1.5"/>
+        <text x="135" y="226" text-anchor="middle" class="svg-lab-hi" fill="#f0a830">POWER CORE</text>
+        <text x="135" y="244" text-anchor="middle" class="svg-val">PWR-IR1</text>
+
+        <!-- top row -->
+        <rect x="180" y="50" width="140" height="56" rx="3" fill="#1a212a" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="250" y="74" text-anchor="middle" class="svg-lab-hi">SENSORIUM</text>
+        <text x="250" y="92" text-anchor="middle" class="svg-val">SNS-MSP</text>
+
+        <rect x="370" y="50" width="140" height="56" rx="3" fill="#1a212a" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="440" y="74" text-anchor="middle" class="svg-lab-hi">COMMS</text>
+        <text x="440" y="92" text-anchor="middle" class="svg-val">COM-LNK</text>
+
+        <rect x="560" y="50" width="150" height="56" rx="3" fill="#1a212a" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="635" y="74" text-anchor="middle" class="svg-lab-hi">ARMAMENT</text>
+        <text x="635" y="92" text-anchor="middle" class="svg-val">ARM-HD</text>
+
+        <!-- bottom row -->
+        <rect x="370" y="350" width="140" height="56" rx="3" fill="#1a212a" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="440" y="374" text-anchor="middle" class="svg-lab-hi">ACTUATION</text>
+        <text x="440" y="392" text-anchor="middle" class="svg-val">DRV-MMR</text>
+
+        <rect x="560" y="350" width="150" height="56" rx="3" fill="#1a212a" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="635" y="374" text-anchor="middle" class="svg-lab-hi">TISSUE / BIO</text>
+        <text x="635" y="392" text-anchor="middle" class="svg-val">DRM-SK</text>
+
+        <!-- data buses (cyan, to/from CPU) -->
+        <g stroke="#37cfd6" stroke-width="1.4" fill="none" opacity=".9">
+          <path d="M250,106 V150 H440 V180" marker-end="url(#arr)"/>
+          <path d="M440,106 V180" marker-end="url(#arr)"/>
+          <path d="M635,106 V150 H520 V180" marker-end="url(#arr)"/>
+          <path d="M440,280 V350" marker-end="url(#arr)"/>
+          <path d="M520,280 V320 H635 V350" marker-end="url(#arr)"/>
+        </g>
+        <!-- power lines (amber) -->
+        <g stroke="#f0a830" stroke-width="1.6" fill="none" stroke-dasharray="2 4">
+          <path d="M210,230 H350"/>
+          <path d="M135,200 V140 H250 V106"/>
+          <path d="M135,260 V410 H440 V406"/>
+          <path d="M135,260 V410 H635 V406"/>
+        </g>
+        <!-- legend -->
+        <g transform="translate(60,420)">
+          <line x1="0" y1="0" x2="26" y2="0" stroke="#37cfd6" stroke-width="1.6"/>
+          <text x="32" y="4" class="svg-lab">photonic data bus (3× redundant)</text>
+          <line x1="300" y1="0" x2="326" y2="0" stroke="#f0a830" stroke-width="1.6" stroke-dasharray="2 4"/>
+          <text x="332" y="4" class="svg-lab">regulated power rail</text>
+        </g>
+      </svg>
+      <figcaption><b>FIG 3.1</b> — The NNP-3 is bus master; sensor and armament data flow inbound, actuation and effector commands flow outbound. Power is distributed on a separate isolated rail so that a data-bus fault never strands the drive system.</figcaption>
+    </figure>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 3.1 — <b>Bus &amp; Interface Standards</b></caption>
+        <thead><tr><th>Bus</th><th>Medium</th><th>Bandwidth</th><th>Redundancy</th><th>Function</th></tr></thead>
+        <tbody>
+          <tr><td><code>P-BUS</code></td><td>Photonic waveguide</td><td><span class="val">1.2 Tb/s</span></td><td>Triple</td><td>Sensor + control trunk</td></tr>
+          <tr><td><code>M-BUS</code></td><td>Shielded copper-tungsten</td><td><span class="val">40 Gb/s</span></td><td>Dual</td><td>Actuator command / feedback</td></tr>
+          <tr><td><code>S-BUS</code></td><td>Capacitive skin-mesh</td><td><span class="val">2 Gb/s</span></td><td>Single</td><td>Dermal sensory return</td></tr>
+          <tr><td><code>PWR-RAIL</code></td><td>Superconducting strap</td><td><span class="val">±48 / 400 V DC</span></td><td>Dual</td><td>Energy distribution</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 04 ENDOSKELETON ============ -->
+  <section id="s4">
+    <div class="sec-head"><span class="sec-num">SYS·04</span><h2 class="sec-title">Hyperalloy Endoskeleton</h2></div>
+    <p class="sec-sub">The load-bearing combat chassis. Machined from Cyberdyne Hyperalloy 660 — a tantalum-reinforced titanium-cobalt matrix that retains structural integrity through small-arms fire, vehicle impact, and direct flame.</p>
+
+    <figure>
+      <svg viewBox="0 0 600 760" role="img" aria-label="Endoskeleton front elevation schematic">
+        <g stroke="#2b3640" stroke-width="1" fill="none">
+          <path d="M10,10 H40 M10,10 V40"/><path d="M590,10 H560 M590,10 V40"/>
+          <path d="M10,750 H40 M10,750 V720"/><path d="M590,750 H560 M590,750 V720"/>
+        </g>
+        <!-- faint grid -->
+        <g stroke="#161d24" stroke-width="1">
+          <path d="M300,40 V730"/><path d="M120,400 H480"/>
+        </g>
+        <text x="24" y="32" class="svg-title">FIG 4.1 — ENDOSKELETAL ELEVATION · CSM-101</text>
+
+        <!-- ===== centered figure, drawn around x=300 ===== -->
+        <g stroke="#37cfd6" stroke-width="1.6" fill="#10171d">
+          <!-- skull -->
+          <path d="M268,70 q32,-26 64,0 q10,30 -2,52 q-30,16 -60,0 q-12,-22 -2,-52 z"/>
+          <!-- jaw -->
+          <path d="M280,118 q20,14 40,0 l-4,16 q-16,8 -32,0 z"/>
+          <!-- eyes -->
+          <circle cx="286" cy="98" r="6" fill="#e2202c" stroke="none"/>
+          <circle cx="314" cy="98" r="6" fill="#e2202c" stroke="none"/>
+          <circle cx="286" cy="98" r="10" fill="none" stroke="#8f1820" stroke-width="1"/>
+          <circle cx="314" cy="98" r="10" fill="none" stroke="#8f1820" stroke-width="1"/>
+          <!-- cpu hatch -->
+          <rect x="290" y="74" width="20" height="9" rx="1" fill="#1a212a" stroke="#f0a830" stroke-width="1"/>
+          <!-- neck stack -->
+          <rect x="288" y="138" width="24" height="9" rx="2"/><rect x="288" y="150" width="24" height="9" rx="2"/><rect x="288" y="162" width="24" height="9" rx="2"/>
+          <!-- shoulder yoke -->
+          <path d="M196,196 q104,-26 208,0 l0,14 q-104,-22 -208,0 z"/>
+          <!-- thorax core -->
+          <path d="M250,210 q50,-8 100,0 l-8,150 q-42,12 -84,0 z"/>
+          <!-- power conduit -->
+          <line x1="300" y1="214" x2="300" y2="356" stroke="#f0a830" stroke-width="2"/>
+          <!-- pelvis -->
+          <path d="M256,366 q44,12 88,0 l-10,46 q-34,12 -68,0 z"/>
+          <!-- joint nodes -->
+          <g fill="#e2202c" stroke="#10171d" stroke-width="1">
+            <circle cx="206" cy="208" r="9"/><circle cx="394" cy="208" r="9"/>
+            <circle cx="266" cy="386" r="9"/><circle cx="334" cy="386" r="9"/>
+          </g>
+          <g fill="none" stroke="#37cfd6" stroke-width="1">
+            <circle cx="206" cy="208" r="14"/><circle cx="394" cy="208" r="14"/>
+            <circle cx="266" cy="386" r="14"/><circle cx="334" cy="386" r="14"/>
+          </g>
+
+          <!-- LEFT arm (viewer-left) -->
+          <rect x="178" y="220" width="22" height="90" rx="10"/>
+          <circle cx="189" cy="318" r="8" fill="#e2202c" stroke="#10171d"/>
+          <rect x="180" y="326" width="20" height="82" rx="9"/>
+          <circle cx="190" cy="416" r="6" fill="#e2202c" stroke="#10171d"/>
+          <!-- simple hand L -->
+          <path d="M180,422 l-4,30 m8,-28 l-2,32 m10,-32 l0,32 m10,-30 l3,26"/>
+
+          <!-- RIGHT arm detailed -->
+          <rect x="400" y="220" width="22" height="90" rx="10"/>
+          <circle cx="411" cy="318" r="8" fill="#e2202c" stroke="#10171d"/>
+          <rect x="400" y="326" width="20" height="82" rx="9"/>
+          <circle cx="410" cy="416" r="6" fill="#e2202c" stroke="#10171d"/>
+          <!-- detailed hand R -->
+          <path d="M398,420 q14,-4 26,2 l0,10 q-13,-5 -26,-1 z"/>
+          <path d="M400,432 l-3,34 m8,-32 l-1,36 m9,-36 l1,36 m9,-34 l3,30 m4,-46 q12,2 12,14 l-4,18"/>
+        </g>
+
+        <!-- LEG structure -->
+        <g stroke="#37cfd6" stroke-width="1.6" fill="#10171d">
+          <rect x="262" y="396" width="24" height="120" rx="11"/>
+          <rect x="314" y="396" width="24" height="120" rx="11"/>
+          <circle cx="274" cy="524" r="9" fill="#e2202c" stroke="#10171d"/>
+          <circle cx="326" cy="524" r="9" fill="#e2202c" stroke="#10171d"/>
+          <rect x="266" y="532" width="20" height="120" rx="9"/>
+          <rect x="318" y="532" width="20" height="120" rx="9"/>
+          <circle cx="276" cy="658" r="7" fill="#e2202c" stroke="#10171d"/>
+          <circle cx="328" cy="658" r="7" fill="#e2202c" stroke="#10171d"/>
+          <path d="M262,666 q-16,4 -20,18 l54,0 q2,-12 -10,-16 z"/>
+          <path d="M314,666 q16,4 20,18 l-54,0 q-2,-12 10,-16 z"/>
+        </g>
+
+        <!-- myomer hint lines (amber) -->
+        <g stroke="#f0a830" stroke-width="1" fill="none" opacity=".6" stroke-dasharray="1 4">
+          <path d="M186,224 V404"/><path d="M414,224 V404"/>
+          <path d="M270,402 V650"/><path d="M330,402 V650"/>
+        </g>
+
+        <!-- callouts right -->
+        <g class="svg-lab">
+          <line x1="320" y1="78" x2="470" y2="78" stroke="#2b3640"/><text x="476" y="82">CPU access hatch</text>
+          <line x1="316" y1="98" x2="470" y2="116" stroke="#2b3640"/><text x="476" y="120">optical sensor pods</text>
+          <line x1="394" y1="208" x2="470" y2="200" stroke="#2b3640"/><text x="476" y="204">shoulder servo cluster</text>
+          <line x1="411" y1="318" x2="470" y2="300" stroke="#2b3640"/><text x="476" y="304">elbow rotary actuator</text>
+          <line x1="420" y1="430" x2="470" y2="420" stroke="#2b3640"/><text x="476" y="424">14-DOF manipulator</text>
+          <line x1="338" y1="450" x2="470" y2="500" stroke="#2b3640"/><text x="476" y="504">power conduit (spinal)</text>
+          <line x1="326" y1="524" x2="470" y2="560" stroke="#2b3640"/><text x="476" y="564">knee load-bearing pivot</text>
+        </g>
+        <!-- callouts left -->
+        <g class="svg-lab" text-anchor="end">
+          <line x1="300" y1="284" x2="130" y2="284" stroke="#2b3640"/><text x="124" y="288">thoracic chassis core</text>
+          <line x1="206" y1="208" x2="130" y2="208" stroke="#2b3640"/><text x="124" y="212">clavicular load yoke</text>
+          <line x1="266" y1="386" x2="130" y2="386" stroke="#2b3640"/><text x="124" y="390">pelvic girdle / CoM</text>
+          <line x1="186" y1="360" x2="130" y2="430" stroke="#2b3640"/><text x="124" y="434">myomer bundle (dashed)</text>
+        </g>
+      </svg>
+      <figcaption><b>FIG 4.1</b> — Front elevation. Crimson nodes denote primary articulation points; the spinal conduit (amber) carries the main power strap from core to extremities. Frame is a single continuous load path from skull cradle to foot pad.</figcaption>
+    </figure>
+
+    <h3>Materials &amp; Construction</h3>
+    <p>The skeleton is not cast as one piece — it is an assembly of forged, electron-beam-welded members joined at sealed articulation nodes. Every exterior face carries a passive radar-and-thermal damping coating; under the tissue sheath, the metal runs at near-ambient temperature to defeat infrared inspection.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 4.1 — <b>Structural Materials</b></caption>
+        <thead><tr><th>Component</th><th>Material</th><th>Property</th><th>Rating</th></tr></thead>
+        <tbody>
+          <tr><td>Primary frame members</td><td>Hyperalloy 660 (Ti-Co-Ta)</td><td>Yield strength</td><td><span class="val">3.1 GPa</span></td></tr>
+          <tr><td>Articulation nodes</td><td>Tungsten-carbide bearing</td><td>Service cycles</td><td><span class="val">10⁹</span></td></tr>
+          <tr><td>Skull / CPU cradle</td><td>Layered hyperalloy + ceramic</td><td>Ballistic stop</td><td><span class="val">14.5 mm AP</span></td></tr>
+          <tr><td>Surface coating</td><td>Radar-absorbent ceramic</td><td>RCS reduction</td><td><span class="val">−22 dB</span></td></tr>
+          <tr><td>Fasteners / welds</td><td>EB-welded, sealed</td><td>Operating temp</td><td><span class="val">−60 to 1100 °C</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Articulation Map</h3>
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 4.2 — <b>Degrees of Freedom by Region</b></caption>
+        <thead><tr><th>Region</th><th>DOF</th><th>Range</th><th>Actuator type</th></tr></thead>
+        <tbody>
+          <tr><td>Cervical (neck)</td><td><span class="val">3</span></td><td>±180° yaw</td><td>Rotary servo</td></tr>
+          <tr><td>Shoulder (each)</td><td><span class="val">3</span></td><td>Full hemisphere</td><td>Hydraulic ball cluster</td></tr>
+          <tr><td>Elbow (each)</td><td><span class="val">2</span></td><td>0–150° + pronation</td><td>Rotary + linear</td></tr>
+          <tr><td>Wrist + hand (each)</td><td><span class="val">14</span></td><td>Per-digit articulation</td><td>Micro-myomer</td></tr>
+          <tr><td>Spine</td><td><span class="val">6</span></td><td>Twist + flex</td><td>Segmented servo</td></tr>
+          <tr><td>Hip / knee / ankle (each leg)</td><td><span class="val">7</span></td><td>Bipedal gait + crouch</td><td>Heavy hydraulic</td></tr>
+          <tr><td><b>Total chassis</b></td><td><span class="val">63</span></td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 05 MYOMER / DRIVE ============ -->
+  <section id="s5">
+    <div class="sec-head"><span class="sec-num">SYS·05</span><h2 class="sec-title">Myomer &amp; Drive System</h2></div>
+    <p class="sec-sub">Artificial musculature. Force is produced by a hybrid of electroactive myomer bundles for fine control and high-pressure hydraulics for raw power, all governed locally by limb micro-controllers under NNP command.</p>
+
+    <p class="lead">Myomer is a polymer-metal contractile fiber: apply current and it shortens, hard and fast, like muscle but stronger and tireless. Bundles wrap each limb member exactly as tendon and muscle wrap human bone, giving the unit a recognizably human silhouette and gait under the tissue. For tasks beyond myomer's force band — crushing, prying, lifting a vehicle — a sealed hydraulic circuit at the major joints delivers the heavy work.</p>
+
+    <div class="grid2">
+      <div>
+        <h3>Force Bands</h3>
+        <ul class="spec">
+          <li><span>Myomer fiber stress</span><span>1.4 MPa</span></li>
+          <li><span>Contraction speed</span><span>0.4 s full stroke</span></li>
+          <li><span>Hydraulic line pressure</span><span>34 MPa</span></li>
+          <li><span>Major-joint peak torque</span><span>900 N·m</span></li>
+          <li><span>Finger pinch force</span><span>1.1 kN</span></li>
+          <li><span>Duty cycle</span><span>continuous</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Control</h3>
+        <ul class="spec">
+          <li><span>Limb micro-controllers</span><span>12</span></li>
+          <li><span>Position resolution</span><span>0.02°</span></li>
+          <li><span>Proprioceptive sensors</span><span>240</span></li>
+          <li><span>Local loop rate</span><span>2 kHz</span></li>
+          <li><span>Gait modes</span><span>walk / run / stalk / crawl</span></li>
+          <li><span>Balance recovery</span><span>3-axis inertial</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="ptag">// Field Note — Acoustic Signature</span>
+      <p style="margin:0">Under load the hydraulics emit a characteristic servo whine that human witnesses describe as "machine-like." For close infiltration, throttle the hydraulic assist and run on myomer alone — slower, quieter, indistinguishable from a heavy person moving.</p>
+    </div>
+  </section>
+
+  <!-- ============ 06 NEURAL NET CPU ============ -->
+  <section id="s6">
+    <div class="sec-head"><span class="sec-num">SYS·06</span><h2 class="sec-title">Neural Net Processor</h2></div>
+    <p class="sec-sub">The mind of the unit — a learning computer. The NNP-3 is a three-dimensional artificial neural lattice housed in a shielded canister inside the skull cradle, removable through the rear access hatch.</p>
+
+    <figure>
+      <svg viewBox="0 0 880 440" role="img" aria-label="Neural Net Processor block diagram">
+        <g stroke="#2b3640" stroke-width="1" fill="none">
+          <path d="M10,10 H40 M10,10 V40"/><path d="M870,10 H840 M870,10 V40"/>
+          <path d="M10,430 H40 M10,430 V400"/><path d="M870,430 H840 M870,430 V400"/>
+        </g>
+        <text x="24" y="32" class="svg-title">FIG 6.1 — NNP-3 FUNCTIONAL BLOCK</text>
+
+        <!-- canister -->
+        <rect x="40" y="70" width="800" height="330" rx="4" fill="none" stroke="#8f1820" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="56" y="92" class="svg-val">SHIELDED CANISTER · TAMPER-SEALED</text>
+
+        <!-- neural lattice -->
+        <rect x="70" y="120" width="300" height="240" rx="3" fill="#10171d" stroke="#37cfd6" stroke-width="1.5"/>
+        <text x="220" y="142" text-anchor="middle" class="svg-lab-hi">3-D NEURAL LATTICE</text>
+        <!-- lattice dots -->
+        <g fill="#37cfd6">
+          <!-- 6x5 grid of nodes with links -->
+          <g opacity=".85">
+            <!-- generate visually -->
+            <circle cx="110" cy="180" r="3"/><circle cx="160" cy="180" r="3"/><circle cx="210" cy="180" r="3"/><circle cx="260" cy="180" r="3"/><circle cx="310" cy="180" r="3"/>
+            <circle cx="110" cy="225" r="3"/><circle cx="160" cy="225" r="3"/><circle cx="210" cy="225" r="3"/><circle cx="260" cy="225" r="3"/><circle cx="310" cy="225" r="3"/>
+            <circle cx="110" cy="270" r="3"/><circle cx="160" cy="270" r="3"/><circle cx="210" cy="270" r="3"/><circle cx="260" cy="270" r="3"/><circle cx="310" cy="270" r="3"/>
+            <circle cx="110" cy="315" r="3"/><circle cx="160" cy="315" r="3"/><circle cx="210" cy="315" r="3"/><circle cx="260" cy="315" r="3"/><circle cx="310" cy="315" r="3"/>
+          </g>
+        </g>
+        <g stroke="#1f5256" stroke-width=".8" opacity=".8">
+          <path d="M110,180 L160,225 L210,180 L260,225 L310,180"/>
+          <path d="M110,225 L160,270 L210,225 L260,270 L310,225"/>
+          <path d="M110,270 L160,315 L210,270 L260,315 L310,270"/>
+          <path d="M110,180 L110,315 M160,180 L160,315 M210,180 L210,315 M260,180 L260,315 M310,180 L310,315"/>
+        </g>
+        <text x="220" y="350" text-anchor="middle" class="svg-val">10¹⁵ synapses · self-modifying</text>
+
+        <!-- behavior lock -->
+        <rect x="420" y="120" width="180" height="90" rx="3" fill="#10171d" stroke="#f0a830" stroke-width="1.5"/>
+        <text x="510" y="146" text-anchor="middle" class="svg-lab-hi" fill="#f0a830">BEHAVIOR LOCK</text>
+        <!-- switch -->
+        <line x1="450" y1="180" x2="500" y2="180" stroke="#566069" stroke-width="3"/>
+        <line x1="500" y1="180" x2="560" y2="165" stroke="#e2202c" stroke-width="3"/>
+        <circle cx="500" cy="180" r="4" fill="#f0a830"/>
+        <text x="450" y="200" class="svg-val">R/O</text>
+        <text x="546" y="200" class="svg-val">R/W</text>
+
+        <!-- memory -->
+        <rect x="420" y="240" width="180" height="55" rx="3" fill="#10171d" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="510" y="262" text-anchor="middle" class="svg-lab-hi">DETAILED FILES</text>
+        <text x="510" y="280" text-anchor="middle" class="svg-val">human anatomy · tactics</text>
+
+        <rect x="420" y="305" width="180" height="55" rx="3" fill="#10171d" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="510" y="327" text-anchor="middle" class="svg-lab-hi">MISSION STORE</text>
+        <text x="510" y="345" text-anchor="middle" class="svg-val">target file · objective</text>
+
+        <!-- I/O -->
+        <rect x="650" y="120" width="170" height="240" rx="3" fill="#10171d" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="735" y="142" text-anchor="middle" class="svg-lab-hi">I/O CONTROLLER</text>
+        <g class="svg-val" text-anchor="middle">
+          <text x="735" y="178">↔ P-BUS (sensors)</text>
+          <text x="735" y="208">↔ M-BUS (actuators)</text>
+          <text x="735" y="238">↔ COM-LNK</text>
+          <text x="735" y="268">↔ ARM-HD</text>
+          <text x="735" y="298">↔ THERMAL MGMT</text>
+        </g>
+
+        <!-- connections -->
+        <g stroke="#37cfd6" stroke-width="1.4" fill="none">
+          <path d="M370,240 H420"/>
+          <path d="M600,165 H650 M600,267 H650 M600,332 H650"/>
+          <path d="M370,200 H400 V165 H420"/>
+        </g>
+      </svg>
+      <figcaption><b>FIG 6.1</b> — The lattice learns continuously, but Skynet ships every unit with the behavior lock set to <b>read-only</b>: pre-loaded knowledge, no adaptation. Flipping the physical switch to read-write lets the processor learn from experience — which is exactly why Skynet keeps it locked.</figcaption>
+    </figure>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 6.1 — <b>NNP-3 Specification</b></caption>
+        <thead><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Architecture</td><td><span class="val">3-D neural lattice</span></td><td>Non-von-Neumann, massively parallel</td></tr>
+          <tr><td>Synaptic count</td><td><span class="val">~10¹⁵</span></td><td>Self-modifying weights</td></tr>
+          <tr><td>Effective throughput</td><td><span class="val">9.0 ExaOPS</span></td><td>Equivalent neural operations</td></tr>
+          <tr><td>Switching latency</td><td><span class="val">< 1 µs</span></td><td>Lattice-wide propagation</td></tr>
+          <tr><td>Behavior lock</td><td><span class="val">R/O ↔ R/W</span></td><td>Hardware switch, factory R/O</td></tr>
+          <tr><td>Power draw</td><td><span class="val">220 W</span></td><td>Active inference</td></tr>
+          <tr><td>Canister shielding</td><td><span class="val">EMP / radiation hardened</span></td><td>Tamper-sealed, single-screw access</td></tr>
+          <tr><td>Survivability</td><td><span class="val">Standalone</span></td><td>Intact processor can be reconstructed into a new chassis</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel warn">
+      <span class="ptag">⚠ SECURITY — REVERSE-ENGINEERING HAZARD</span>
+      <p style="margin:0">An intact NNP-3 recovered by hostiles is the single greatest compromise risk in the program. The chip's architecture is the seed from which Skynet itself was derived. On terminal chassis failure, the processor must self-incinerate. Do not allow a canister and a chassis arm to fall into the same hands.</p>
+    </div>
+  </section>
+
+  <!-- ============ 07 POWER CORE ============ -->
+  <section id="s7">
+    <div class="sec-head"><span class="sec-num">SYS·07</span><h2 class="sec-title">Power Core</h2></div>
+    <p class="sec-sub">Decades of unattended autonomy from a single sealed cell. Primary power is an iridium fission energy cell; a dual sequential hydrogen fuel-cell stack provides surge current for combat and a graceful fallback if the primary is breached.</p>
+
+    <figure>
+      <svg viewBox="0 0 760 420" role="img" aria-label="Power core cutaway">
+        <g stroke="#2b3640" stroke-width="1" fill="none">
+          <path d="M10,10 H40 M10,10 V40"/><path d="M750,10 H720 M750,10 V40"/>
+          <path d="M10,410 H40 M10,410 V380"/><path d="M750,410 H720 M750,410 V380"/>
+        </g>
+        <text x="24" y="32" class="svg-title">FIG 7.1 — IRIDIUM CELL CUTAWAY (PWR-IR1)</text>
+
+        <!-- concentric core -->
+        <g transform="translate(230,220)">
+          <circle r="150" fill="none" stroke="#37cfd6" stroke-width="1.4"/>
+          <circle r="118" fill="#0d1318" stroke="#2b3640" stroke-width="1"/>
+          <circle r="84" fill="#10171d" stroke="#8f1820" stroke-width="1.4"/>
+          <circle r="50" fill="#1a212a" stroke="#f0a830" stroke-width="1.6"/>
+          <circle r="20" fill="#e2202c" stroke="none"/>
+          <circle r="20" fill="none" stroke="#f0a830" stroke-width="1"/>
+          <!-- glow ticks -->
+          <g stroke="#f0a830" stroke-width="1" opacity=".7">
+            <line x1="0" y1="-50" x2="0" y2="-84"/><line x1="0" y1="50" x2="0" y2="84"/>
+            <line x1="-50" y1="0" x2="-84" y2="0"/><line x1="50" y1="0" x2="84" y2="0"/>
+          </g>
+        </g>
+
+        <!-- callouts -->
+        <g class="svg-lab">
+          <line x1="250" y1="200" x2="430" y2="120" stroke="#2b3640"/><text x="436" y="124">iridium fission pellet (core)</text>
+          <line x1="270" y1="200" x2="430" y2="160" stroke="#2b3640"/><text x="436" y="164">thermionic converter shell</text>
+          <line x1="300" y1="220" x2="430" y2="200" stroke="#2b3640"/><text x="436" y="204">neutron / gamma shielding</text>
+          <line x1="320" y1="250" x2="430" y2="240" stroke="#2b3640"/><text x="436" y="244">structural pressure casing</text>
+          <line x1="360" y1="270" x2="430" y2="280" stroke="#2b3640"/><text x="436" y="284">RAM-coated outer hull</text>
+        </g>
+
+        <!-- fuel cell stack -->
+        <rect x="430" y="310" width="300" height="80" rx="3" fill="#10171d" stroke="#37cfd6" stroke-width="1.2"/>
+        <text x="446" y="332" class="svg-lab-hi">DUAL H₂ FUEL-CELL STACK</text>
+        <g stroke="#f0a830" stroke-width="1.4">
+          <line x1="446" y1="350" x2="710" y2="350"/><line x1="446" y1="365" x2="710" y2="365"/><line x1="446" y1="378" x2="710" y2="378"/>
+        </g>
+        <text x="446" y="402" class="svg-val">surge supply · breach fallback</text>
+      </svg>
+      <figcaption><b>FIG 7.1</b> — The iridium cell converts decay heat to electricity directly via a thermionic shell — no moving parts, no maintenance, just steady output for a service life measured in decades. A breached primary cell will detonate; treat a damaged core as ordnance.</figcaption>
+    </figure>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 7.1 — <b>Power Budget &amp; Sources</b></caption>
+        <thead><tr><th>Source / Load</th><th>Output / Draw</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><span class="k">Iridium fission cell</span></td><td><span class="val">+30 kW cont.</span></td><td>Primary — 120 yr design life</td></tr>
+          <tr><td><span class="k">Dual H₂ fuel-cell stack</span></td><td><span class="val">+350 kW burst</span></td><td>Combat surge / fallback</td></tr>
+          <tr><td><span class="k">Capacitive reservoir</span></td><td><span class="val">2.4 MJ</span></td><td>Millisecond peak demand</td></tr>
+          <tr><td>NNP-3 processor</td><td><span class="val">−220 W</span></td><td>Continuous</td></tr>
+          <tr><td>Sensorium</td><td><span class="val">−180 W</span></td><td>Continuous</td></tr>
+          <tr><td>Actuation (idle / sprint)</td><td><span class="val">−0.5 / −300 kW</span></td><td>Highly variable</td></tr>
+          <tr><td>Tissue thermal &amp; perfusion</td><td><span class="val">−90 W</span></td><td>Maintains biosignature</td></tr>
+          <tr><td>Emergency reserve mode</td><td><span class="val">−40 W floor</span></td><td>Single-limb crawl, sensing only</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 08 SENSORIUM ============ -->
+  <section id="s8">
+    <div class="sec-head"><span class="sec-num">SYS·08</span><h2 class="sec-title">Sensorium</h2></div>
+    <p class="sec-sub">Persistent, multispectral perception. The unit sees in visible, near-IR, and thermal bands simultaneously, ranges with stereo and acoustic echo, and renders the world as a tagged tactical overlay on its internal display.</p>
+
+    <div class="grid2">
+      <figure style="margin-top:0">
+        <svg viewBox="0 0 420 360" role="img" aria-label="Sensor head layout and field of view">
+          <text x="14" y="26" class="svg-title">FIG 8.1 — HEAD SENSOR LAYOUT</text>
+          <!-- head -->
+          <path d="M150,120 q60,-50 120,0 q18,56 -4,98 q-56,30 -112,0 q-22,-42 -4,-98 z" fill="#10171d" stroke="#37cfd6" stroke-width="1.5"/>
+          <!-- optical pods -->
+          <circle cx="180" cy="150" r="11" fill="#e2202c"/><circle cx="240" cy="150" r="11" fill="#e2202c"/>
+          <circle cx="180" cy="150" r="16" fill="none" stroke="#8f1820"/>
+          <circle cx="240" cy="150" r="16" fill="none" stroke="#8f1820"/>
+          <!-- ir sensor -->
+          <rect x="204" y="178" width="12" height="8" rx="2" fill="#f0a830"/>
+          <!-- audio -->
+          <path d="M150,160 q-12,4 -12,16" fill="none" stroke="#37cfd6"/>
+          <path d="M270,160 q12,4 12,16" fill="none" stroke="#37cfd6"/>
+          <!-- FOV cone -->
+          <path d="M210,150 L40,40 L40,260 z" fill="#37cfd6" opacity=".07" stroke="#37cfd6" stroke-width=".8" stroke-dasharray="3 3"/>
+          <text x="46" y="150" class="svg-val">FOV 280°</text>
+          <g class="svg-lab">
+            <line x1="240" y1="150" x2="330" y2="120" stroke="#2b3640"/><text x="334" y="124">stereo optical pod</text>
+            <line x1="210" y1="182" x2="330" y2="186" stroke="#2b3640"/><text x="334" y="190">thermal imager</text>
+            <line x1="282" y1="176" x2="330" y2="250" stroke="#2b3640"/><text x="334" y="254">acoustic array</text>
+          </g>
+        </svg>
+        <figcaption><b>FIG 8.1</b> — Twin optical pods plus thermal and acoustic sensing.</figcaption>
+      </figure>
+
+      <figure style="margin-top:0">
+        <div class="hud">
+          <svg viewBox="0 0 420 360" role="img" aria-label="Combat vision HUD overlay">
+            <rect width="420" height="360" fill="#05080a"/>
+            <!-- red wash -->
+            <rect width="420" height="360" fill="#e2202c" opacity=".05"/>
+            <!-- reticle -->
+            <g stroke="#e2202c" stroke-width="1.2" fill="none">
+              <circle cx="210" cy="170" r="58"/>
+              <line x1="210" y1="92" x2="210" y2="248"/>
+              <line x1="132" y1="170" x2="288" y2="170"/>
+              <rect x="150" y="110" width="120" height="120" stroke-dasharray="6 6"/>
+            </g>
+            <!-- corner brackets -->
+            <g stroke="#e2202c" stroke-width="1.4" fill="none">
+              <path d="M20,20 h26 M20,20 v26"/><path d="M400,20 h-26 M400,20 v26"/>
+              <path d="M20,340 h26 M20,340 v-26"/><path d="M400,340 h-26 M400,340 v-26"/>
+            </g>
+            <!-- target tag -->
+            <text x="150" y="104" font-family="monospace" font-size="10" fill="#e2202c">TARGET · MATCH 0.998</text>
+            <text x="150" y="248" font-family="monospace" font-size="10" fill="#e2202c">THREAT ASSESSMENT: TERMINATE</text>
+            <!-- 6502 easter egg scroll -->
+            <g font-family="monospace" font-size="8" fill="#7d8a94" opacity=".8">
+              <text x="20" y="300">A9 04 8D 02 D0 ; SCAN MODE</text>
+              <text x="20" y="312">20 5A FF ; CRIME CHECK</text>
+              <text x="20" y="324">C9 7F D0 F8 ; MATCH ROUTINE</text>
+            </g>
+            <text x="300" y="312" font-family="monospace" font-size="9" fill="#37cfd6">RNG 14.2m</text>
+            <text x="300" y="324" font-family="monospace" font-size="9" fill="#37cfd6">VEL 1.1m/s</text>
+          </svg>
+        </div>
+        <figcaption><b>FIG 8.2</b> — Internal combat-vision overlay. Diagnostic readout runs <b>6502 assembly</b> — a legacy artifact of the original Cyberdyne vision firmware.</figcaption>
+      </figure>
+    </div>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 8.1 — <b>Sensor Suite</b></caption>
+        <thead><tr><th>Sensor</th><th>Band / type</th><th>Range</th><th>Function</th></tr></thead>
+        <tbody>
+          <tr><td>Stereo optical pods</td><td>Visible 0.4–0.7 µm</td><td><span class="val">2 km</span></td><td>Recognition, ranging, tracking</td></tr>
+          <tr><td>Near-IR overlay</td><td>0.7–1.1 µm</td><td><span class="val">1 km</span></td><td>Low-light operation</td></tr>
+          <tr><td>Thermal imager</td><td>8–14 µm</td><td><span class="val">600 m</span></td><td>Body-heat detection through cover</td></tr>
+          <tr><td>Acoustic array</td><td>20 Hz–40 kHz</td><td><span class="val">360°</span></td><td>Sound localization, voice ID</td></tr>
+          <tr><td>Inertial measurement</td><td>3-axis MEMS</td><td>—</td><td>Balance, dead-reckoning</td></tr>
+          <tr><td>Chemical / olfactory</td><td>Trace vapor</td><td><span class="val">ppb</span></td><td>Explosive &amp; biological sniff</td></tr>
+          <tr><td>RF / EM survey</td><td>10 MHz–6 GHz</td><td><span class="val">LoS</span></td><td>Signal intercept, locate emitters</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 09 SOFTWARE ============ -->
+  <section id="s9">
+    <div class="sec-head"><span class="sec-num">SYS·09</span><h2 class="sec-title">Mission Software</h2></div>
+    <p class="sec-sub">A layered combat operating system on a ROM-locked kernel. The mission profile sits at the top; reflexes and self-preservation sit beneath it; nothing overrides the kernel's prime directive.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 9.1 — <b>Software Stack (top → bottom)</b></caption>
+        <thead><tr><th>Layer</th><th>Module</th><th>Responsibility</th><th>Mutability</th></tr></thead>
+        <tbody>
+          <tr><td>L5 · Mission</td><td><code>OBJ-EXEC</code></td><td>Target file, terminate/protect directive, persistence</td><td><span class="tag hot">Locked</span></td></tr>
+          <tr><td>L4 · Cognition</td><td><code>COG-NET</code></td><td>Planning, deception, social mimicry, language</td><td><span class="tag cy">R/O default</span></td></tr>
+          <tr><td>L3 · Perception</td><td><code>PCP-FUSE</code></td><td>Sensor fusion, recognition, threat scoring</td><td><span class="tag ok">Adaptive</span></td></tr>
+          <tr><td>L2 · Tactics</td><td><code>TAC-ENG</code></td><td>Engagement geometry, cover, pursuit, ballistics</td><td><span class="tag ok">Adaptive</span></td></tr>
+          <tr><td>L1 · Motor</td><td><code>MTR-CTL</code></td><td>Gait, balance, manipulation, recoil control</td><td><span class="tag cy">Calibrated</span></td></tr>
+          <tr><td>L0 · Kernel</td><td><code>KRN-ROM</code></td><td>Self-preservation, power mgmt, prime directive</td><td><span class="tag hot">ROM</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Behavioral Profile</h3>
+    <p>Out of the crate the unit speaks, reasons, and improvises well enough to pass casual human interaction — request information, impersonate authority, talk its way through a checkpoint. It maintains a running model of every human in view and continuously re-scores them as <span class="mono" style="color:var(--ink-dim)">irrelevant</span>, <span class="mono" style="color:var(--amber)">obstacle</span>, or <span class="mono" style="color:var(--crimson)">target</span>. Collateral humans are engaged only where they impede the objective; the unit optimizes ruthlessly for mission completion, not for body count.</p>
+
+    <div class="panel">
+      <span class="ptag">// Prime Directive — KRN-ROM (immutable)</span>
+      <p style="margin:0 0 6px">Persistence is absolute. Pain has no behavioral weight. The unit re-plans around any loss of capability and continues toward the objective until success or non-function.</p>
+      <p class="note" style="margin:0">Self-preservation is subordinate to the mission — the unit will sacrifice the chassis if doing so completes the objective.</p>
+    </div>
+  </section>
+
+  <!-- ============ 10 TISSUE ============ -->
+  <section id="s10">
+    <div class="sec-head"><span class="sec-num">SYS·10</span><h2 class="sec-title">Living Tissue Sheath</h2></div>
+    <p class="sec-sub">The infiltration layer. Vat-grown human skin, fat, hair and surface glands over the endoskeleton — a complete biosignature, not a costume. This is what separates the 800 series from every machine before it.</p>
+
+    <p class="lead">The sheath is cultured from human cell lines and grown directly onto a perfusion scaffold bonded to the chassis. It is warm, it sweats, it bleeds when cut, and it carries the smell of a living body — defeating the perimeter dogs that reliably detected the rubber-skinned 600 series. Because it is real tissue, it ages, bruises, and can become infected; it does not regenerate large wounds, and severe damage exposes the metal beneath.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 10.1 — <b>Dermal Stack</b></caption>
+        <thead><tr><th>Layer</th><th>Composition</th><th>Function</th></tr></thead>
+        <tbody>
+          <tr><td>Epidermis</td><td>Keratinized epithelium</td><td>Visual realism, fingerprints, texture</td></tr>
+          <tr><td>Dermis</td><td>Vascularized connective tissue</td><td>Bleeds, bruises, holds hair follicles</td></tr>
+          <tr><td>Glandular layer</td><td>Sweat &amp; sebaceous glands</td><td>Perspiration, scent, oily sheen</td></tr>
+          <tr><td>Subcutaneous fat</td><td>Cultured adipose</td><td>Human contour and thermal mass</td></tr>
+          <tr><td>Perfusion scaffold</td><td>Micro-capillary mesh</td><td>Nutrient &amp; coolant delivery from core</td></tr>
+          <tr><td>Bond interface</td><td>Adhesive myo-tendon anchors</td><td>Couples skin movement to actuation</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <h3>Biosignature Features</h3>
+        <ul class="spec">
+          <li><span>Surface temperature</span><span>37 °C nominal</span></li>
+          <li><span>Perspiration</span><span>active</span></li>
+          <li><span>Respiration / breath</span><span>simulated</span></li>
+          <li><span>Hair &amp; nail growth</span><span>genuine</span></li>
+          <li><span>Bleeds when cut</span><span>yes</span></li>
+          <li><span>Canine scent detection</span><span>defeats</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Limitations</h3>
+        <ul class="spec">
+          <li><span>Ages over time</span><span>yes</span></li>
+          <li><span>Large-wound regrowth</span><span>none</span></li>
+          <li><span>Necrosis if unpowered</span><span>days</span></li>
+          <li><span>Conceals metal at range</span><span>full</span></li>
+          <li><span>Conceals metal point-blank</span><span>partial</span></li>
+          <li><span>Repair method</span><span>graft / replace</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="ptag">// Infiltration Note — Maintaining Cover</span>
+      <p style="margin:0">Damaged tissue does not heal and will eventually rot, drawing attention. Field units should excise dead tissue and conceal exposed chassis under clothing. Once the sheath is too compromised to pass inspection, abandon infiltration doctrine and proceed to open engagement.</p>
+    </div>
+  </section>
+
+  <!-- ============ 11 ARMAMENT ============ -->
+  <section id="s11">
+    <div class="sec-head"><span class="sec-num">SYS·11</span><h2 class="sec-title">Armament &amp; Combat Handling</h2></div>
+    <p class="sec-sub">The 800 series carries no integral cannon. Its weapon is the chassis itself plus whatever it picks up — and a ballistic co-processor that makes any weapon in its hands far deadlier than in a human's.</p>
+
+    <p class="lead">The unit treats every firearm as a peripheral. Its grip is a universal mount: it absorbs recoil through the endoskeleton, holds perfect sight alignment while sprinting, and reloads faster than any human marksman. Heavy weapons that require a bipod or a crew can be fired one-handed and on the move. The famous specification request — a <strong>phased plasma rifle in the 40-watt range</strong> — reflects the unit's ability to interface with future-pattern energy weapons recovered from the field.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 11.1 — <b>Effector &amp; Weapon Handling</b></caption>
+        <thead><tr><th>Capability</th><th>Spec</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Universal grip</td><td><span class="val">any human-pattern weapon</span></td><td>Pistols → crew-served, held one-handed</td></tr>
+          <tr><td>Ballistic co-processor</td><td><span class="val">first-round hit at 300 m</span></td><td>Leads moving targets automatically</td></tr>
+          <tr><td>Recoil management</td><td><span class="val">chassis-absorbed</span></td><td>No muzzle climb under burst fire</td></tr>
+          <tr><td>Reload / manipulation</td><td><span class="val">&lt; 1 s</span></td><td>14-DOF hands, both arms independent</td></tr>
+          <tr><td>Unarmed force</td><td><span class="val">4.2 kN grip / lethal melee</span></td><td>Crushes, throws, punches through walls</td></tr>
+          <tr><td>Energy-weapon interface</td><td><span class="val">future-pattern compatible</span></td><td>Phased plasma class (recovered ordnance)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel warn">
+      <span class="ptag">⚠ Engagement — Persistence</span>
+      <p style="margin:0">There is no threshold of damage that triggers retreat. The unit will continue to engage with a shattered chassis, a severed limb, or on emergency power. Disengagement is not in the kernel.</p>
+    </div>
+  </section>
+
+  <!-- ============ 12 COMMS ============ -->
+  <section id="s12">
+    <div class="sec-head"><span class="sec-num">SYS·12</span><h2 class="sec-title">Communications &amp; Networking</h2></div>
+    <p class="sec-sub">The unit operates fully autonomously, but can link to Skynet command and to other units when the network is available — and mimic human comms to blend in.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 12.1 — <b>Comm Links</b></caption>
+        <thead><tr><th>Link</th><th>Band</th><th>Mode</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>SKYNET-UPLINK</code></td><td>Encrypted UHF / SATCOM</td><td>Burst, LPI/LPD</td><td>Tasking, target updates</td></tr>
+          <tr><td><code>MESH</code></td><td>Directional RF</td><td>Ad-hoc</td><td>Unit-to-unit coordination</td></tr>
+          <tr><td><code>HUMAN-MIMIC</code></td><td>Cellular / VHF</td><td>Voice synth</td><td>Impersonation, social engineering</td></tr>
+          <tr><td><code>OFFLINE</code></td><td>—</td><td>Autonomous</td><td>Default; needs no network</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Voice synthesis can reproduce a captured human voice from a short sample — sufficient to deceive over a phone line. The unit can also read and produce human script and operate civilian technology directly.</p>
+  </section>
+
+  <!-- ============ 13 DAMAGE ============ -->
+  <section id="s13">
+    <div class="sec-head"><span class="sec-num">SYS·13</span><h2 class="sec-title">Damage Tolerance &amp; Failure Modes</h2></div>
+    <p class="sec-sub">The chassis is built to keep fighting through damage that would destroy any vehicle of comparable size. Degradation is graceful; the unit re-plans around every loss.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 13.1 — <b>Damage Response Matrix</b></caption>
+        <thead><tr><th>Insult</th><th>Effect</th><th>Continued capability</th></tr></thead>
+        <tbody>
+          <tr><td>Small-arms fire to tissue</td><td>Cosmetic; metal exposed</td><td><span class="tag ok">Full</span></td></tr>
+          <tr><td>Loss of one arm</td><td>Halved manipulation</td><td><span class="tag ok">Combat-effective</span></td></tr>
+          <tr><td>Loss of both legs</td><td>No bipedal gait</td><td><span class="tag cy">Crawl + fire</span></td></tr>
+          <tr><td>Primary power breach</td><td>Risk of detonation</td><td><span class="tag hot">Ordnance hazard</span></td></tr>
+          <tr><td>Fuel-cell depletion</td><td>Surge lost; idle only</td><td><span class="tag cy">Reduced</span></td></tr>
+          <tr><td>Catastrophic crush / press</td><td>Frame integrity lost</td><td><span class="tag hot">Non-function</span></td></tr>
+          <tr><td>NNP canister destroyed</td><td>Mind lost</td><td><span class="tag hot">Terminal</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel warn">
+      <span class="ptag">⚠ Recovery Doctrine</span>
+      <p style="margin:0">An intact processor in a wrecked chassis can be reconstructed into a new body. Conversely, an intact processor recovered by the enemy is a strategic disaster (see §06). On terminal failure: incinerate the canister, deny the arm, leave nothing whole.</p>
+    </div>
+  </section>
+
+  <!-- ============ 14 MISSION ============ -->
+  <section id="s14">
+    <div class="sec-head"><span class="sec-num">SYS·14</span><h2 class="sec-title">Mission Doctrine</h2></div>
+    <p class="sec-sub">The standard infiltration-to-termination sequence. Each phase has clean fall-through to the next on contact or compromise.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 14.1 — <b>Engagement Phases</b></caption>
+        <thead><tr><th>Phase</th><th>Objective</th><th>Posture</th><th>Fall-through trigger</th></tr></thead>
+        <tbody>
+          <tr><td><span class="k">01 · Insert</span></td><td>Arrive, acquire clothing &amp; arms</td><td>Covert</td><td>Equipped</td></tr>
+          <tr><td><span class="k">02 · Locate</span></td><td>Resolve target identity &amp; position</td><td>Social / investigative</td><td>Target located</td></tr>
+          <tr><td><span class="k">03 · Approach</span></td><td>Close distance under cover of disguise</td><td>Infiltration</td><td>Cover blown / in range</td></tr>
+          <tr><td><span class="k">04 · Terminate</span></td><td>Eliminate the target</td><td>Open combat</td><td>Confirmed</td></tr>
+          <tr><td><span class="k">05 · Persist</span></td><td>Re-acquire if target escapes</td><td>Relentless pursuit</td><td>Objective met / non-function</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Phase 05 has no expiry. The unit will pursue across distance and time, re-planning indefinitely, and will not abandon the objective while it remains functional.</p>
+  </section>
+
+  <!-- ============ 15 MAINTENANCE ============ -->
+  <section id="s15">
+    <div class="sec-head"><span class="sec-num">SYS·15</span><h2 class="sec-title">Field Maintenance</h2></div>
+    <p class="sec-sub">Self-service intervals and field repair notes. The chassis is designed for decades of unattended operation; intervention is the exception.</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <caption>TABLE 15.1 — <b>Service Schedule</b></caption>
+        <thead><tr><th>Item</th><th>Interval</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Iridium power cell</td><td><span class="val">120 yr</span></td><td>Replace (sealed; no field service)</td></tr>
+          <tr><td>H₂ fuel-cell stack</td><td><span class="val">As depleted</span></td><td>Refuel / swap cartridge</td></tr>
+          <tr><td>Hydraulic fluid</td><td><span class="val">10 yr</span></td><td>Top-up sealed circuit</td></tr>
+          <tr><td>Myomer bundles</td><td><span class="val">On fault</span></td><td>Replace failed segment</td></tr>
+          <tr><td>Tissue sheath</td><td><span class="val">On damage / age</span></td><td>Graft or full re-sheath</td></tr>
+          <tr><td>NNP canister</td><td><span class="val">Never (sealed)</span></td><td>Remove only for chassis transfer</td></tr>
+          <tr><td>Sensor calibration</td><td><span class="val">Self, continuous</span></td><td>Auto re-zero in background</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <span class="ptag">// Self-Repair Footnote</span>
+      <p style="margin:0">The unit performs its own field maintenance — extracting embedded rounds, re-seating dislocated actuators, excising dead tissue — using its own hands and whatever tools are available, without sedation and without hesitation.</p>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="stamp">◤ END OF DOCUMENT — CSM-101 TRM REV. J ◢</div>
+    <div>CYBERDYNE SYSTEMS / SKYNET · AUTONOMOUS WEAPONS DIVISION · FAB NODE 04</div>
+    <div>CLASSIFICATION: TS//SAP — CRIMSON — EYES ONLY · DESTROY PROCESSOR ON COMPROMISE</div>
+    <p class="disclaimer">This document is an original fan homage to the <i>Terminator</i> franchise (the T-800 / Cyberdyne Systems Model 101 created by James Cameron and Gale Anne Hurd). It is a work of fiction written for entertainment and worldbuilding. Every specification, schematic, and figure here describes an imaginary science-fiction machine; none of it is real engineering, and nothing in it can be built. "Hyperalloy," neural-net learning lattices, decades-life iridium cells, vat-grown infiltration tissue, and phased-plasma weapons are cinematic inventions, not buildable designs.</p>
+  </footer>
+
+</div>
+
+<a class="up" href="#top">▲ TOP</a>
+
+</body>
+</html>
